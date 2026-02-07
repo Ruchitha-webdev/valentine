@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Racchu ❤️ Acchu</title>
+
+<style>
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  font-family:'Segoe UI',sans-serif;
+  background:#0b0014;
+  color:#fff;
+  overflow:hidden;
+}
+
+/* Common layout */
+.page{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+}
+.hidden{display:none;}
+
+button{
+  padding:12px 30px;
+  font-size:18px;
+  border:none;
+  border-radius:30px;
+  cursor:pointer;
+  margin-top:20px;
+}
+.yes{
+  background:linear-gradient(45deg,#ff3b6f,#ff7eb3);
+  color:white;
+}
+.no{
+  background:#aaa;
+  position:absolute;
+}
+
+.big{
+  font-size:36px;
+  font-weight:bold;
+}
+
+/* Letter */
+.letter{
+  font-size:20px;
+  line-height:1.6;
+  max-width:700px;
+}
+
+/* Cloud message */
+.cloud{
+  position:absolute;
+  background:white;
+  color:black;
+  padding:8px 14px;
+  border-radius:20px;
+  font-size:14px;
+  white-space:nowrap;
+  transform:translate(-50%,-120%);
+  box-shadow:0 6px 15px rgba(0,0,0,0.3);
+}
+
+/* Hearts */
+.heart{
+  position:absolute;
+  top:-10px;
+  font-size:22px;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(110vh);opacity:0;}
+}
+
+/* Accepted graphics */
+.accept-box{
+  animation:zoomIn 1.2s ease;
+}
+@keyframes zoomIn{
+  from{transform:scale(0.6);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+.hug{
+  font-size:90px;
+  animation:hug 2s infinite;
+}
+@keyframes hug{
+  50%{transform:scale(1.15);}
+}
+
+.kiss{
+  font-size:50px;
+  animation:kiss 1.5s infinite;
+}
+@keyframes kiss{
+  0%{opacity:0}
+  50%{opacity:1}
+  100%{opacity:0}
+}
+
+.glow{
+  text-shadow:0 0 20px #ff7eb3,0 0 40px #ff3b6f;
+}
+</style>
+</head>
+
+<body>
+
+<video id="cam" autoplay muted class="hidden"></video>
+
+<!-- PAGE 0 : PERMISSION -->
+<div id="p0" class="page">
+  <div>
+    <h2 class="glow">Hey Acchu 🥹❤️</h2>
+    <p>Racchu wants to record your reaction 💖</p>
+    <button class="yes" onclick="startRecording()">Allow & Start</button>
+  </div>
+</div>
+
+<!-- PAGE 1 : LETTER -->
+<div id="p1" class="page hidden">
+  <div class="letter">
+    <p>
+      Hey Acchu 😌❤️ <br><br>
+
+      Important announcement 📢 <br><br>
+
+      From the day you entered my life, my brain stopped working 🤯  
+      and my heart started doing full-time duty for you 💓 <br><br>
+
+      You are my happiness supplier 😍,  
+      my stress creator 😤,  
+      and my favorite human forever 🫶 <br><br>
+
+      I tried acting normal… but I failed 😌  
+      At this point, you have no escape 🙈❤️ <br><br>
+
+      So listen carefully sir 😎💖
+    </p>
+    <button class="yes" onclick="goToQuestion()">NEXT ➡️</button>
+  </div>
+</div>
+
+<!-- PAGE 2 : QUESTION -->
+<div id="p2" class="page hidden">
+  <div>
+    <div class="big glow">Will you be my Valentine? 💖</div><br><br>
+    <button class="yes" onclick="accepted()">YES 😍</button>
+    <button class="no" id="no" onclick="moveNo()">NO 🙈</button>
+  </div>
+</div>
+
+<!-- PAGE 3 : ACCEPTED -->
+<div id="p3" class="page hidden">
+  <div class="accept-box">
+    <div class="big glow">YES 💖 He accepted my proposal 🥹</div><br>
+
+    <div class="hug">🤗🤗</div>
+    <div class="kiss">😘💋😘</div>
+
+    <p style="margin-top:15px;">
+      Thanks for accepting my proposal ❤️
+    </p>
+  </div>
+</div>
+
+<script>
+/* Recording */
+let recorder, chunks=[];
+
+/* Falling hearts */
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML=["💖","💗","❤️"][Math.floor(Math.random()*3)];
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration=(3+Math.random()*5)+"s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),8000);
+},300);
+
+/* Start recording */
+function startRecording(){
+  navigator.mediaDevices.getUserMedia({video:true,audio:true}).then(s=>{
+    cam.srcObject=s;
+    recorder=new MediaRecorder(s);
+    recorder.ondataavailable=e=>chunks.push(e.data);
+    recorder.start();
+    p0.classList.add("hidden");
+    p1.classList.remove("hidden");
+  });
+}
+
+/* Next page */
+function goToQuestion(){
+  p1.classList.add("hidden");
+  p2.classList.remove("hidden");
+
+  const btn=document.getElementById("no");
+  btn.style.left="55%";
+  btn.style.top="55%";
+}
+
+/* NO button logic */
+let noCount=0;
+const noMsgs=[
+  "Please don’t choose NO 🥺",
+  "I love you ❤️",
+  "Baby I want you 😘"
+];
+
+function moveNo(){
+  const btn=document.getElementById("no");
+  const maxX=window.innerWidth-btn.offsetWidth-20;
+  const maxY=window.innerHeight-btn.offsetHeight-20;
+
+  const x=Math.random()*maxX;
+  const y=Math.random()*maxY;
+
+  btn.style.left=x+"px";
+  btn.style.top=y+"px";
+
+  const old=document.getElementById("cloudMsg");
+  if(old) old.remove();
+
+  const cloud=document.createElement("div");
+  cloud.className="cloud";
+  cloud.id="cloudMsg";
+  cloud.innerHTML=noMsgs[noCount%noMsgs.length];
+  cloud.style.left=(x+btn.offsetWidth/2)+"px";
+  cloud.style.top=y+"px";
+
+  document.body.appendChild(cloud);
+  setTimeout(()=>cloud.remove(),1500);
+
+  noCount++;
+}
+
+/* Accepted */
+function accepted(){
+  p2.classList.add("hidden");
+  p3.classList.remove("hidden");
+
+  setTimeout(()=>{
+    recorder.stop();
+    recorder.onstop=()=>{
+      const blob=new Blob(chunks,{type:"video/mp4"});
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      a.download="For_Racchu_From_Acchu.mp4";
+      a.click();
+    };
+  },5000);
+}
+</script>
+
+</body>
+</html>
